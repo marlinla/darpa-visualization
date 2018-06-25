@@ -21,21 +21,37 @@
 	    <p>
 	        <input type="file" id="files" name="files"/>
 	        <output id="list"></output>
-	    </p>
+		</p>
+		
+		<p>
+	        <button id="increment">Increment</button>
+		</p>
 	    <p>
-	        <button id="increment">Click to increment</button>
-	    </p>
-	    <div class="form">
-			<form name="form" method="post" action="darpa" id="form">
-				<ul class="ul">
-					<li>Input two numbers:</li>
-					<li><input id="n1" type="text" name="n1"></li>
-					<li><input id="n2" type="text" name="n2"></li>
-					<li><input type="submit" value="Sum" name="button" /></li>
-					<li><textarea name="sum" id="sum">${sum}</textarea></li>
-				</ul>
-			</form>
-		</div>
+	        <button id="start">Start</button>
+		</p>
+		<p>
+	        <button id="stop">Stop</button>
+		</p>
+		<p>
+				<button id="reset">Reset</button>
+			</p>
+		<form>
+
+			<p>
+				<input id="interval" type="number" placeholder="Time Interval">
+			</p>
+			<p>
+				<input id="speed" type="number" placeholder="Speed">
+			</p>
+			<p>
+				<button id="update">
+			</p>
+			<p>
+				<input type="reset">
+			</p>
+		</form>
+		
+	    
 	    <div id="sliderContainer">
 	        
 	    </div>

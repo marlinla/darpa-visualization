@@ -23,6 +23,10 @@ function main(){
     // console.log("it begins");
 	document.getElementById('files').addEventListener('change', handleFileSelect, false);
     document.getElementById('increment').addEventListener('click', clickIncrement, false);
+    document.getElementById('start').addEventListener('click', clickStart, false);
+    document.getElementById('stop').addEventListener('click', clickStop, false);
+    document.getElementById('reset').addEventListener('click', clickReset, false);
+    
     
     
     data=[
@@ -53,6 +57,7 @@ function main(){
 
 function clickIncrement(){
     //console.log("clickIncrement");
+    //console.log(lineCursor);
     if (parseResults !== null){
         // console.log('pre', counter, countIncrement, timeLast);
         lineIncrement = 1;
@@ -68,11 +73,26 @@ function clickIncrement(){
             dataSet1 = [];
         }
         timeCursor = parseResults.data[lineCursor][4];
-        // console.log('post',counter, countIncrement, parseResults.data[counter][4]);
         slider.noUiSlider.set(timeCursor);
+        // console.log('post',counter, countIncrement, parseResults.data[counter][4]);
+        // slider.noUiSlider.set(timeCursor);
         // console.log(timeCursor);
         // console.log('sliderUpdate', slider, parseInt(slider.noUiSlider.get()) +  minuteIncrement);
     }
+}
+
+function clickStart(){
+    clearInterval(drawLoop);
+    drawLoop = window.setInterval(clickIncrement, updateRate);
+}
+function clickStop(){
+    clearInterval(drawLoop);
+}
+function clickReset(){
+    lineCursor = 0;
+    timeCursor = parseResults.data[lineCursor][4];
+    slider.noUiSlider.set(timeCursor);
+    clickIncrement();
 }
 
 function processData(){
@@ -146,18 +166,6 @@ function filterSpam(i, returnArray){
     
 }
 
-function filterSpam2(returnArray){
-    if(returnArray.length != 0){
-        for (var i = 0; i < returnArray.length; i++){
-            for(var j = i + 1; j < returnArray.length; j++){
-
-            }
-        }
-        
-
-    }
-    
-}
 
 function fill(colorGuide){
     return function(d){ return colorGuide[d.primary] }
@@ -185,7 +193,7 @@ function parseFile(files, func){
         console.log(parseResults);
         // console.log(results);
         //clickIncrement();
-        drawLoop = window.setInterval(clickIncrement, updateRate);
+        //drawLoop = window.setInterval(clickIncrement, updateRate);
         //record first relative minute
         //console.log('timeLast:', timeLast);
         }
