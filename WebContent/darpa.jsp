@@ -8,7 +8,6 @@
 	  	<script src="https://d3js.org/d3.v4.min.js"></script>
 	  	<script src="https://d3js.org/d3-fetch.v1.min.js"></script>
 	  	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.4.0/papaparse.js"></script>
-<!-- 	  	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->	  	
 		<script src="http://vizjs.org/viz.v1.3.0.min.js"></script>
 		<script src="slider/nouislider.js"></script>
 		<link rel="stylesheet" href="style.css">
@@ -16,12 +15,7 @@
 		<title>DARPA Attack</title>
 	</head>
 	<body>
-	<h1 style="text-align: center">DARPA Attack Visualization</h1>
-	    <p>Open DARPA attack files</p>
-	    <p>
-	        <input type="file" id="files" name="files"/>
-	        <output id="list"></output>
-		</p>
+		<h1 style="text-align: center">DARPA Attack Visualization</h1>
 		
 		<p>
 	        <button id="increment">Increment</button>
@@ -34,7 +28,7 @@
 		</p>
 		<p>
 				<button id="reset">Reset</button>
-			</p>
+		</p>
 		<form>
 
 			<p>
@@ -44,7 +38,7 @@
 				<input id="speed" type="number" placeholder="Speed">
 			</p>
 			<p>
-				<button id="update">
+				<button id="update" type="button">Update</button>
 			</p>
 			<p>
 				<input type="reset">

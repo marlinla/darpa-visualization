@@ -179,30 +179,6 @@ function parseFile(files, func) {
     });
 }
 
-//on Choose File
-function handleFileSelect(evt) {
-    //reset counter
-    lineCursor = 0;
-    //setup event
-    files = evt.target.files; // FileList object
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-        output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-            f.size, ' bytes, last modified: ',
-            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-            '</li>');
-    }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-    //parse file
-    func = "";
-    if (files.length == 1) {
-        parseFile(files, func);
-    }
-    clearInterval(drawLoop);
-    drawLoop = window.setInterval(clickIncrement, updateRate);
-}
-
 function sliderFactory() {
     if (slider.noUiSlider == null) {
         noUiSlider.create(slider, {
