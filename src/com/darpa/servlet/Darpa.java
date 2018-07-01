@@ -28,7 +28,20 @@ public class Darpa extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getOutputStream().print(new DarpaCode().read(getServletContext()));
+		switch (request.getParameter("type")) {
+		case "ip":
+			String idIP = request.getParameter("id");
+			response.getOutputStream().print(new DarpaCode().readIPFile(getServletContext(), idIP));
+			break;
+		case "predicted":
+			String idAttack = request.getParameter("id");
+			response.getOutputStream().print(new DarpaCode().readPredictedFile(getServletContext(), idAttack));
+			break;
+		case "attack":
+			response.getOutputStream().print(new DarpaCode().readAttackFile(getServletContext()));
+			break;
+		}
+			
 		
 	}
 
