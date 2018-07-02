@@ -1,4 +1,5 @@
 var files = null;
+var predictionCount = 32;
 var fileCount = 61;
 var fileCursor = 0;
 var timeCursor = 0;
@@ -23,6 +24,7 @@ const GET_ATTACK = "attack";
 const DELIM_IP = ",";
 const DELIM_PREDICTED = " - ";
 const DELIM_ATTACK = ",";
+const DEFAULT_COLOR = "#000000";
 
 main();
 
@@ -58,8 +60,8 @@ function main() {
 
   //ajax get_IP and GET_PREDICTED files from 0 to fileCount
   fetchData(ipCursor, GET_IP);
-  fetchData(predictedCursor, GET_PREDICTED);
-  fetchData(null, GET_ATTACK);
+  //fetchData(predictedCursor, GET_PREDICTED);
+  //fetchData(null, GET_ATTACK);
 }
 function fetchData(id, type) {
   console.log(
@@ -83,15 +85,25 @@ function fetchData(id, type) {
 }
 
 function processIP() {
-  var colorGuide = [];
+  var colorGuide = {};
   var resultsArray = [];
   for (let index = 0; index < ipResults[fileCursor].data.length; index++) {
+    let loopArray = [];
     const element = ipResults[fileCursor].data[index];
-    resultsArray.push(element[0]);
-    resultsArray.push(element[1]);
+    loopArray.push(element[0]);
+    loopArray.push(element[1]);
     const weight = JSON.parse(element[2]);
-    resultsArray.push(weight.weight);
+    loopArray.push(weight.weight);
+    resultsArray.push(loopArray);
+    if (fileCursor < predictionCount){
+      colorGuide[element[0]] = '#000000';
+    }
+    else{
+      colorGuide[element[0]] = element[3];
+    }
   }
+  console.log(colorGuide);
+  console.log(resultsArray);
 
   slider.setAttribute("disabled", true);
   /* if (attack != '-') {
@@ -113,7 +125,7 @@ function fill(colorGuide) {
 function clickIncrement() {
   if (ipResults !== null) {
     console.log(fileCursor);
-    processIP();
+    processIP(fileCursor);
     processPredicted();
     fileCursor += 1;
     if (!(fileCursor <= fileCount)) {

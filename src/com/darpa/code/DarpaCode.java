@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletContext;
 
@@ -18,6 +19,20 @@ public class DarpaCode {
 	public static final String ATTACK_FILE = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
 	public static final String IP_FILE = IP_PATH + "graph_";
 	public static final String PREDICTED_FILE = PREDICTED_PATH + "graph_";
+
+	private static final String PREDICTED_PATTERN = "(.*) - (.*) - (.*) - (.*)  - (.*)";
+
+	private static final String ERROR_YES = "yes";
+
+	private static final String PREDICTED_YES = "anomal";
+
+	private static final String PREDICTED_YES_COLOR = "#00ff00";
+
+	private static final String ERROR_COLOR = "#ffff00";
+
+	private static final String PREDICTED_NO_COLOR = "#000000";
+
+	private static final String LINE_SEPERATOR = System.lineSeparator();
 	
 	
 	public String readIPFile(ServletContext servletContext) throws FileNotFoundException {
@@ -25,50 +40,71 @@ public class DarpaCode {
 	}
 	
 	public String readIPFile(ServletContext servletContext, String id) throws FileNotFoundException {
-		String result = ""; 
-		String filePath = IP_FILE + id;
-		File file = new File(filePath);
-		Pattern pattern = Pattern.compile(IP_PATTERN);
-		Scanner scanner = new Scanner(file);
-		while(scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			Matcher matcher = pattern.matcher(line);
+		String ipResult = ""; 
+		String ipFilePath = IP_FILE + id;
+		File ipFile = new File(ipFilePath);
+		Pattern ipPattern = Pattern.compile(IP_PATTERN);
+		Scanner ipScanner = new Scanner(ipFile);
+		while(ipScanner.hasNextLine()) {
+			String line = ipScanner.nextLine();
+			Matcher matcher = ipPattern.matcher(line);
 			if (matcher.matches()) {
-				result += matcher.group(1) + "." + matcher.group(2) + "." + matcher.group(3) + "." + matcher.group(4) + "," 
-						+ matcher.group(5) + "." + matcher.group(6) + "." + matcher.group(7) + "." + matcher.group(8) + "," 
-						+ matcher.group(9) + System.lineSeparator();
+				ipResult += "\"" + matcher.group(1) + "." + matcher.group(2) + "." + matcher.group(3) + "." + matcher.group(4) + "\"" + "," 
+						+ "\"" + matcher.group(5) + "." + matcher.group(6) + "." + matcher.group(7) + "." + matcher.group(8) + "\""  + "," 
+						+ matcher.group(9) + LINE_SEPERATOR;
+			}
+			else {
+				System.out.println("IP(s) not valid!");
 			}
 		}
-		scanner.close();
-		return result;
-	}
-	public String readPredictedFile(ServletContext servletContext, String id) throws FileNotFoundException {
+		ipScanner.close();
+		
+		if (Integer.parseInt(id) >= 32) {
 		String result = "";
-		String filePath = PREDICTED_FILE + id;
-		System.out.println(filePath);
-		File file = new File(filePath);
-		Scanner scanner = new Scanner(file);
-		while (scanner.hasNextLine()) {
-			result += scanner.nextLine() + System.lineSeparator();
+		String predidictedFilePath = PREDICTED_FILE + id;
+		File predictedFile = new File(predidictedFilePath);
+		Pattern predictedPattern = Pattern.compile(PREDICTED_PATTERN);
+		Scanner predictedScanner = new Scanner(predictedFile);
+		Scanner resultScanner = new Scanner(ipResult);
+		//discard first line header
+		if(predictedScanner.hasNextLine()) {
+			predictedScanner.nextLine();
 		}
-		scanner.close();
-		
+		while(predictedScanner.hasNextLine() && resultScanner.hasNextLine()) {
+			String line = predictedScanner.nextLine();
+			Matcher matcher = predictedPattern.matcher(line);
+			if (matcher.matches()) {
+				if (matcher.group(4).equals(ERROR_YES)) {
+					result += resultScanner.nextLine() + "," + ERROR_COLOR + LINE_SEPERATOR;
+				}
+				else {
+					if (matcher.group(2).equals(PREDICTED_YES)) {
+						result += resultScanner.nextLine() + "," + PREDICTED_YES_COLOR + LINE_SEPERATOR;
+					}
+					else {
+						result += resultScanner.nextLine() + "," + PREDICTED_NO_COLOR + LINE_SEPERATOR;
+					}
+				}
+			}
+			else {
+				System.out.println("Prediction not valid!");
+				result += resultScanner.nextLine() + "," + PREDICTED_NO_COLOR + LINE_SEPERATOR;
+			}
+		}
+		if (predictedScanner.hasNextLine() || resultScanner.hasNextLine()) {
+			System.out.println("line missmatch");
+		}
+		predictedScanner.close();
+		resultScanner.close();
 		return result;
+		}
+		else {
+			return ipResult;
+
 		
+		}
 	}
 
-	public String readAttackFile(ServletContext servletContext) throws FileNotFoundException {
-		String result = "";
-		String filePath = ATTACK_FILE;
-		File file = new File(filePath);
-		Scanner scanner = new Scanner(file);
-		while (scanner.hasNextLine()) {
-			result += scanner.nextLine() + System.lineSeparator();
-		}
-		scanner.close();
-		
-		return result;
-	}
 
 
 }

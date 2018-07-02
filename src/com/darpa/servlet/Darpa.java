@@ -33,13 +33,6 @@ public class Darpa extends HttpServlet {
 			String idIP = request.getParameter("id");
 			response.getOutputStream().print(new DarpaCode().readIPFile(getServletContext(), idIP));
 			break;
-		case "predicted":
-			String idAttack = request.getParameter("id");
-			response.getOutputStream().print(new DarpaCode().readPredictedFile(getServletContext(), idAttack));
-			break;
-		case "attack":
-			response.getOutputStream().print(new DarpaCode().readAttackFile(getServletContext()));
-			break;
 		}
 			
 		
