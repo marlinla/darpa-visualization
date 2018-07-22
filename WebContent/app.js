@@ -10,13 +10,20 @@ var predictedResults = [];
 var predictedCursor = 32;
 var attackResults = "";
 var minuteIncrement = 10;
-var updateRate = 100;
+var updateRate = 1000;
+var updateMultiplier = 1;
 var drawLoop = null;
 var sliderMin = 0;
 var sliderMax = 61;
 var slider;
 var sliderContainer;
 var bP;
+var buttonIncrement;
+var buttonStart;
+var buttonStop;
+var buttonRestart;
+var buttonSpeed;
+var buttonReset;
 
 const GET_IP = "ip";
 const GET_PREDICTED = "predicted";
@@ -31,8 +38,7 @@ main();
 function main() {
   slider = document.getElementById("sliderContainer");
 
-  document.getElementById("speed").value = updateRate.toString();
-  document.getElementById("interval").value = minuteIncrement.toString();
+  document.getElementById("speed").value = updateMultiplier.toString();
 
   //event listeners
   document
@@ -40,10 +46,13 @@ function main() {
     .addEventListener("click", clickIncrement, false);
   document.getElementById("start").addEventListener("click", clickStart, false);
   document.getElementById("stop").addEventListener("click", clickStop, false);
-  document.getElementById("reset").addEventListener("click", clickReset, false);
   document
-    .getElementById("update")
-    .addEventListener("click", clickUpdate, false);
+    .getElementById("restart")
+    .addEventListener("click", clickRestart, false);
+  document
+    .getElementById("speed")
+    .addEventListener("change", updateSpeed, false);
+  document.getElementById("reset").addEventListener("click", clickReset, false);
 
   data = [
     ["A", "X", 2],
@@ -58,6 +67,7 @@ function main() {
   bP = viz.biPartite().data(data);
   d3.select("g").call(bP);
 
+  updateSlider();
   //ajax get_IP and GET_PREDICTED files from 0 to fileCount
   fetchData(ipCursor, GET_IP);
   //fetchData(predictedCursor, GET_PREDICTED);
@@ -74,11 +84,9 @@ function fetchData(id, type) {
     .then(function(myText) {
       if (type === GET_IP) {
         parseFile([myText], DELIM_IP, false, parseIP);
-      }
-      else if (type === GET_PREDICTED) {
+      } else if (type === GET_PREDICTED) {
         parseFile([myText], DELIM_PREDICTED, true, parsePredicted);
-      }
-      else if (type === GET_ATTACK) {
+      } else if (type === GET_ATTACK) {
         parseFile([myText], DELIM_ATTACK, false, parseAttack);
       }
     });
@@ -92,18 +100,15 @@ function processIP() {
     const element = ipResults[fileCursor].data[index];
     loopArray.push(element[0]);
     loopArray.push(element[1]);
-    const weight = JSON.parse(element[2]);
-    loopArray.push(weight.weight);
+    const weight = element[2];
+    loopArray.push(weight);
     resultsArray.push(loopArray);
-    if (fileCursor < predictionCount){
-      colorGuide[element[0]] = '#000000';
-    }
-    else{
+    if (fileCursor < predictionCount) {
+      colorGuide[element[0]] = "#000000";
+    } else {
       colorGuide[element[0]] = element[3];
     }
   }
-  console.log(colorGuide);
-  console.log(resultsArray);
 
   slider.setAttribute("disabled", true);
   /* if (attack != '-') {
@@ -123,29 +128,34 @@ function fill(colorGuide) {
 }
 
 function clickIncrement() {
-  if (ipResults !== null) {
-    console.log(fileCursor);
-    processIP(fileCursor);
-    processPredicted();
-    fileCursor += 1;
-    if (!(fileCursor <= fileCount)) {
-      fileCursor = 0;
+  clickIncrement: {
+    if (ipResults !== null) {
+      if (!(fileCursor < fileCount)) {
+        clickStop();
+        break clickIncrement;
+      }
+      console.log(fileCursor);
+      processIP(fileCursor);
+      processPredicted();
+      fileCursor += 1;
+      slider.noUiSlider.set(fileCursor);
     }
-    updateSlider();
   }
 }
 
 function clickStart() {
+  if (!(fileCursor < fileCount)) {
+    clickRestart();
+  }
   clearInterval(drawLoop);
-  drawLoop = window.setInterval(clickIncrement, updateRate);
+  drawLoop = window.setInterval(clickIncrement, updateRate / updateMultiplier);
 }
 function clickStop() {
   clearInterval(drawLoop);
 }
-function clickReset() {
+function clickRestart() {
   fileCursor = 0;
-  timeCursor = ipResults.data[fileCursor][4];
-  slider.noUiSlider.set(timeCursor);
+  slider.noUiSlider.set(fileCursor);
   clickIncrement();
 }
 function clickUpdate() {
@@ -153,21 +163,29 @@ function clickUpdate() {
   //document.getElementById('speed');
   console.log("clickUpdate");
 }
+function clickReset() {
+  document.getElementById("speed").value = "1";
+  updateSpeed();
+}
 function updateInterval() {
   minuteIncrement = this.value;
 }
 function updateSpeed() {
-  updateRate = this.value;
+  updateMultiplier = this.value;
+  if (drawLoop != null) {
+    clickStart();
+  }
 }
 
 function updateSlider() {
+  console.log("slider");
   if (slider.noUiSlider == null) {
     noUiSlider.create(slider, {
       start: [0],
-      step: minuteIncrement,
+      step: 1,
       range: {
-        min: [parseInt(sliderMin)],
-        max: [parseInt(sliderMax)]
+        min: [sliderMin],
+        max: [sliderMax]
       },
       connect: [true, false],
       disable: true
@@ -175,8 +193,8 @@ function updateSlider() {
   } else {
     slider.noUiSlider.updateOptions({
       range: {
-        min: [parseInt(sliderMin)],
-        max: [parseInt(sliderMax)]
+        min: [sliderMin],
+        max: [sliderMax]
       }
     });
   }
@@ -198,8 +216,10 @@ function parseIP(results) {
   ipCursor++;
   if (ipCursor <= fileCount) {
     fetchData(ipCursor, GET_IP);
+    document.getElementById("loader").ldBar.set((ipCursor / fileCount) * 100);
   } else {
     console.log("IP results:", ipResults);
+    showPage();
   }
 }
 function parsePredicted(results) {
@@ -211,9 +231,12 @@ function parsePredicted(results) {
     console.log("Predicted results:", predictedResults);
   }
 }
-function parseAttack(results){
-    attackResults = results;
-    console.log(attackResults);
-    
+function parseAttack(results) {
+  attackResults = results;
+  console.log(attackResults);
+}
 
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("visualization").style.display = "block";
 }

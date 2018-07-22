@@ -2,6 +2,9 @@ package com.darpa.code;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,18 +12,24 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang3.StringUtils;
+
 
 public class DarpaCode {
-	private static final String IP_PATTERN = "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b \\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b (\\{.*?\\})";
+	static final String SHELL = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\start.bat";
+
 	
-	public static final String IP_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\edge_list_w\\";
+	private static final String IP_PATTERN = "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b \\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b ([0-9]+)";
+	private static final String PREDICTED_PATTERN = "(.*) - (.*) - (.*) - (.*)  - (.*)";
+	
+	public static final String IP_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\Data\\edge_list_w2\\";
 	public static final String PREDICTED_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\predicted\\"; 
+	public static final String ATTACK_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
 	
 	public static final String ATTACK_FILE = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
 	public static final String IP_FILE = IP_PATH + "graph_";
 	public static final String PREDICTED_FILE = PREDICTED_PATH + "graph_";
 
-	private static final String PREDICTED_PATTERN = "(.*) - (.*) - (.*) - (.*)  - (.*)";
 
 	private static final String ERROR_YES = "yes";
 
@@ -28,18 +37,29 @@ public class DarpaCode {
 
 	private static final String PREDICTED_YES_COLOR = "#00ff00";
 
-	private static final String ERROR_COLOR = "#ffff00";
+	private static final String ERROR_YES_COLOR = "#ffff00";
 
 	private static final String PREDICTED_NO_COLOR = "#000000";
 
 	private static final String LINE_SEPERATOR = System.lineSeparator();
+
+	private static final String ERROR_NO_COLOR = "#ff0000";
+
+
+	private static final Object ZERO_STRING = "0";
+
+
+	private static final String NV_DIRECTORY = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\";
 	
 	
-	public String readIPFile(ServletContext servletContext) throws FileNotFoundException {
+	public String readIPFile(ServletContext servletContext) throws IOException {
 		return readIPFile(servletContext, IP_FILE);
 	}
 	
-	public String readIPFile(ServletContext servletContext, String id) throws FileNotFoundException {
+	public String readIPFile(ServletContext servletContext, String id) throws IOException {
+		processPythonFiles("py", "-2", "main4.py", "--id", id);
+		processPythonFiles("py", "-2", "get_edge_embedding.py", id);
+
 		String ipResult = ""; 
 		String ipFilePath = IP_FILE + id;
 		File ipFile = new File(ipFilePath);
@@ -75,7 +95,12 @@ public class DarpaCode {
 			Matcher matcher = predictedPattern.matcher(line);
 			if (matcher.matches()) {
 				if (matcher.group(4).equals(ERROR_YES)) {
-					result += resultScanner.nextLine() + "," + ERROR_COLOR + LINE_SEPERATOR;
+					if (matcher.group(2).equals(PREDICTED_YES)) {
+						result += resultScanner.nextLine() + "," + ERROR_YES_COLOR + LINE_SEPERATOR;
+					}
+					else {
+						result += resultScanner.nextLine() + "," + ERROR_NO_COLOR + LINE_SEPERATOR;
+					}
 				}
 				else {
 					if (matcher.group(2).equals(PREDICTED_YES)) {
@@ -103,6 +128,29 @@ public class DarpaCode {
 
 		
 		}
+	}
+	private void processPythonFiles(String... cmd) throws IOException {
+		//Runtime runtime = Runtime.getRuntime();
+		//Process p = new ProcessBuilder("cmd /c " + SHELL + " " + id).start();
+		ProcessBuilder processBuilder = new ProcessBuilder(cmd);
+		processBuilder.directory(new File(NV_DIRECTORY));
+		processBuilder.redirectOutput(Redirect.INHERIT);
+		//processBuilder.redirectError(Redirect.INHERIT);
+		Process process = processBuilder.start(); 
+		
+		try {
+			System.out.println(Arrays.toString(cmd) + process.waitFor());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public String readAttackFile(ServletContext servletContext) {
+		
+		return null;
+		
 	}
 
 
