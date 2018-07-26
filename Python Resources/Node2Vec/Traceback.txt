@@ -1,0 +1,19 @@
+C:\Users\Marlin\AppData\Local\Programs\Python\Python37\lib\site-packages\gensim\utils.py:1209: UserWarning: detected Windows; aliasing chunkize to chunkize_serial
+  warnings.warn("detected Windows; aliasing chunkize to chunkize_serial")
+Traceback (most recent call last):
+  File ".\main4.py", line 120, in <module>
+    main(args)
+  File ".\main4.py", line 104, in main
+    learn_embeddings(walks)
+  File ".\main4.py", line 91, in learn_embeddings
+    model = Word2Vec(walks, size=args.dimensions, window=args.window_size, min_count=0, sg=1, workers=args.workers, iter=args.iter)
+  File "C:\Users\Marlin\AppData\Local\Programs\Python\Python37\lib\site-packages\gensim\models\word2vec.py", line 748, in __init__
+    fast_version=FAST_VERSION)
+  File "C:\Users\Marlin\AppData\Local\Programs\Python\Python37\lib\site-packages\gensim\models\base_any2vec.py", line 630, in __init__
+    self.build_vocab(sentences, trim_rule=trim_rule)
+  File "C:\Users\Marlin\AppData\Local\Programs\Python\Python37\lib\site-packages\gensim\models\base_any2vec.py", line 801, in build_vocab
+    sentences, progress_per=progress_per, trim_rule=trim_rule)
+  File "C:\Users\Marlin\AppData\Local\Programs\Python\Python37\lib\site-packages\gensim\models\word2vec.py", line 1488, in scan_vocab
+    total_words += len(sentence)
+TypeError: object of type 'map' has no len()
+PS C:\Users\Marlin\Documents\Development\Web\darpa\data\Node2Vec>

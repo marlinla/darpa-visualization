@@ -110,8 +110,7 @@ function processIP() {
     }
   }
 
-  slider.setAttribute("disabled", true);
-  /* if (attack != '-') {
+    /* if (attack != '-') {
         console.log(attack);
         colorGuide[ipResults.data[i][0]] = '#FF0000';
     } */
@@ -130,7 +129,7 @@ function fill(colorGuide) {
 function clickIncrement() {
   clickIncrement: {
     if (ipResults !== null) {
-      if (!(fileCursor < fileCount)) {
+      if (!(fileCursor < ipCursor)) {
         clickStop();
         break clickIncrement;
       }
@@ -138,7 +137,7 @@ function clickIncrement() {
       processIP(fileCursor);
       processPredicted();
       fileCursor += 1;
-      slider.noUiSlider.set(fileCursor);
+      slider.noUiSlider.set([fileCursor, ipCursor]);
     }
   }
 }
@@ -146,16 +145,18 @@ function clickIncrement() {
 function clickStart() {
   if (!(fileCursor < fileCount)) {
     clickRestart();
+    console.log("start");
   }
   clearInterval(drawLoop);
-  drawLoop = window.setInterval(clickIncrement, updateRate / updateMultiplier);
+  //drawLoop = window.setInterval(clickIncrement, updateRate / updateMultiplier);
+  drawLoop = setInterval(clickIncrement, updateRate / updateMultiplier);
 }
 function clickStop() {
   clearInterval(drawLoop);
 }
 function clickRestart() {
   fileCursor = 0;
-  slider.noUiSlider.set(fileCursor);
+  slider.noUiSlider.set([fileCursor, ipCursor]);
   clickIncrement();
 }
 function clickUpdate() {
@@ -181,27 +182,21 @@ function updateSlider() {
   console.log("slider");
   if (slider.noUiSlider == null) {
     noUiSlider.create(slider, {
-      start: [0],
+      start: [0,0],
       step: 1,
       range: {
         min: [sliderMin],
         max: [sliderMax]
       },
-      connect: [true, false],
+      connect: [true, true, false],
       disable: true
     });
-  } else {
-    slider.noUiSlider.updateOptions({
-      range: {
-        min: [sliderMin],
-        max: [sliderMax]
-      }
-    });
   }
+  slider.setAttribute("disabled", true);
+
 }
 
 function parseFile(files, delim, head, func) {
-  clearInterval(drawLoop);
   Papa.parse(files[0], {
     delimiter: delim,
     newline: "\n",
@@ -213,10 +208,10 @@ function parseFile(files, delim, head, func) {
 
 function parseIP(results) {
   ipResults[ipCursor] = results;
+  slider.noUiSlider.set([fileCursor, ipCursor]);
   ipCursor++;
   if (ipCursor <= fileCount) {
     fetchData(ipCursor, GET_IP);
-    document.getElementById("loader").ldBar.set((ipCursor / fileCount) * 100);
   } else {
     console.log("IP results:", ipResults);
     showPage();
@@ -225,6 +220,7 @@ function parseIP(results) {
 function parsePredicted(results) {
   predictedResults[predictedCursor] = results;
   predictedCursor++;
+  
   if (predictedCursor <= fileCount) {
     fetchData(predictedCursor, GET_PREDICTED);
   } else {

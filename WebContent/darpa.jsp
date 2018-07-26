@@ -11,15 +11,13 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.4.0/papaparse.js"></script>
 		<script src="http://vizjs.org/viz.v1.3.0.min.js"></script>
 		<script src="slider/nouislider.js"></script>
-		<script src="loader/loading-bar.min.js"></script>
-		<link rel="stylesheet" href="loader/loading-bar.css">
 		<link rel="stylesheet" href="style.css">
 		<link rel="stylesheet" href="slider/nouislider.css">
 		<title>DARPA Attack</title>
 	</head>
 
 	<body>
-		<div id="visualization" style="display:none;">
+		<div id="visualization">
 			<h1 style="text-align: center">DARPA Attack Visualization</h1>
 
 			<p>
@@ -38,7 +36,7 @@
 				<strong>Speed Multiplier:</strong>
 			</p>
 			<p>
-				<input id="speed" type="number" value="1" step="0.25" placeholder="Speed">
+				<input id="speed" type="number" value="1" step="0.25" placeho	er="Speed">
 			</p>
 			<p>
 				<button id="reset">Reset Speed Multiplier</button>
@@ -56,7 +54,6 @@
 			</div>
 		</div>
 
-		<div id="loader" data-preset="fan" class="ldBar label-center" data-value="0"></div>
 
 
 		<script src="app.js"></script>
