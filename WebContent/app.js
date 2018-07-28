@@ -110,7 +110,7 @@ function processIP() {
     }
   }
 
-    /* if (attack != '-') {
+  /* if (attack != '-') {
         console.log(attack);
         colorGuide[ipResults.data[i][0]] = '#FF0000';
     } */
@@ -145,7 +145,6 @@ function clickIncrement() {
 function clickStart() {
   if (!(fileCursor < fileCount)) {
     clickRestart();
-    console.log("start");
   }
   clearInterval(drawLoop);
   //drawLoop = window.setInterval(clickIncrement, updateRate / updateMultiplier);
@@ -179,10 +178,9 @@ function updateSpeed() {
 }
 
 function updateSlider() {
-  console.log("slider");
   if (slider.noUiSlider == null) {
     noUiSlider.create(slider, {
-      start: [0,0],
+      start: [0, 0],
       step: 1,
       range: {
         min: [sliderMin],
@@ -193,7 +191,6 @@ function updateSlider() {
     });
   }
   slider.setAttribute("disabled", true);
-
 }
 
 function parseFile(files, delim, head, func) {
@@ -220,7 +217,7 @@ function parseIP(results) {
 function parsePredicted(results) {
   predictedResults[predictedCursor] = results;
   predictedCursor++;
-  
+
   if (predictedCursor <= fileCount) {
     fetchData(predictedCursor, GET_PREDICTED);
   } else {
