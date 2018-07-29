@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,20 @@ public class DarpaCode {
 	private static final String ERROR_NO_COLOR = "#ff0000";
 
 	private static final String NV_DIRECTORY = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\";
+	
+	private static final Map<Integer, List<String>> anormalMap;
+	
+		static {
+		HashMap<Integer, List<String>> aMap;
+		try {
+			aMap = queryAnormalFile();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			aMap = null;
+		}
+		anormalMap = Collections.unmodifiableMap(aMap);
+	}
 
 
 	public String readIPFile(ServletContext servletContext) throws IOException {
@@ -52,7 +67,9 @@ public class DarpaCode {
 	public String readIPFile(ServletContext servletContext, String id) throws IOException {
 		processPythonFiles("py", "-2", "main4.py", "--id", id);
 		processPythonFiles("py", "-2", "get_edge_embedding.py", id);
-
+		
+		System.out.println(anormalMap);
+		
 		String ipResult = processIPFiles(id);
 
 		if (Integer.parseInt(id) >= 32) {
@@ -128,14 +145,6 @@ public class DarpaCode {
 		return result;
 	}
 
-	private static HashMap<Integer, List<String>> queryAnormalFile() throws FileNotFoundException{
-		Scanner scanner = new Scanner(new File("C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\classification_task\\anomal_edges_from_list.txt"));
-		while (scanner.hasNextLine()){
-			System.out.println(scanner.nextLine());
-		}
-		scanner.close();
-		return null;
-	}
 	
 	private void processPythonFiles(String... cmd) throws IOException {
 		ProcessBuilder processBuilder = new ProcessBuilder(cmd);
@@ -143,7 +152,7 @@ public class DarpaCode {
 		processBuilder.redirectOutput(Redirect.INHERIT);
 		Process process = processBuilder.start();
 		try {
-			System.out.println(Arrays.toString(cmd) + process.waitFor());
+			process.waitFor();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -153,4 +162,22 @@ public class DarpaCode {
 
 
 
+	private static HashMap<Integer, List<String>> queryAnormalFile() throws FileNotFoundException{
+		HashMap<Integer, List<String>> aMap = new HashMap<>();
+		Scanner scanner = new Scanner(new File("C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\classification_task\\anomal_edges_from_list.txt"));
+		int key = 0;
+		
+		while (scanner.hasNextLine()){
+			List<String> value = new ArrayList<>();
+			String[] line = scanner.nextLine().split(",");
+			//add pairs of anormal connections 
+			for (int i = 2; i < line.length - 1; i += 2) {
+				value.add(line[i] + "," + line[i+1]);	
+			}
+			aMap.put(key, value);
+			key++;
+		}
+		scanner.close();
+		return aMap;
+	}
 }
