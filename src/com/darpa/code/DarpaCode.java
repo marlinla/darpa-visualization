@@ -22,7 +22,7 @@ public class DarpaCode {
 	private static final String PREDICTED_PATTERN = "(.*) - (.*) - (.*) - (.*)  - (.*)";
 
 	public static final String IP_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\Data\\edge_list_w2\\";
-	public static final String PREDICTED_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\predicted\\";
+	public static final String PREDICTED_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\Data\\predicted\\";
 	public static final String ATTACK_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
 
 	public static final String ATTACK_FILE = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
@@ -50,9 +50,8 @@ public class DarpaCode {
 		static {
 		HashMap<Integer, List<String>> aMap;
 		try {
-			aMap = queryAnormalFile();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			aMap = initData();
+		} catch (IOException e) {
 			e.printStackTrace();
 			aMap = null;
 		}
@@ -64,15 +63,28 @@ public class DarpaCode {
 		return readIPFile(servletContext, IP_FILE);
 	}
 
+	private static HashMap<Integer, List<String>> initData() throws IOException {
+		HashMap<Integer, List<String>> aMap;
+		processPythonFiles("python", "create_trainset_all.py");
+		processPythonFiles("python","train_cat_30.py");
+		try {
+			aMap = queryAnormalFile();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			aMap = null;
+		}
+		return aMap;
+	}
+
 	public String readIPFile(ServletContext servletContext, String id) throws IOException {
-		processPythonFiles("py", "-2", "main4.py", "--id", id);
-		processPythonFiles("py", "-2", "get_edge_embedding.py", id);
-		
-		System.out.println(anormalMap);
-		
+		processPythonFiles("python", "main4.py", "--id", id);
+		processPythonFiles("python", "get_edge_embedding.py", id);
 		String ipResult = processIPFiles(id);
 
-		if (Integer.parseInt(id) >= 32) {
+		if (Integer.parseInt(id) >= 31) {
+			processPythonFiles("python", "train_cat_n.py", id);
+			processPythonFiles("python", "test_n.py", id);
+			processPythonFiles("python", "edge_classification_in_sequence_visual.py", id);
 			return processPredictedFiles(id, ipResult);
 		} else {
 			return ipResult;
@@ -146,7 +158,7 @@ public class DarpaCode {
 	}
 
 	
-	private void processPythonFiles(String... cmd) throws IOException {
+	private static void processPythonFiles(String... cmd) throws IOException {
 		ProcessBuilder processBuilder = new ProcessBuilder(cmd);
 		processBuilder.directory(new File(NV_DIRECTORY));
 		processBuilder.redirectOutput(Redirect.INHERIT);
