@@ -16,16 +16,16 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 
 public class DarpaCode {
-	static final String SHELL = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\start.bat";
+	static final String SHELL = "Node2Vec\\start.bat";
 
 	private static final String IP_PATTERN = "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b \\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b ([0-9]+)";
 	private static final String PREDICTED_PATTERN = "(.*) - (.*) - (.*) - (.*)  - (.*)";
 
-	public static final String IP_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\Data\\edge_list_w2\\";
-	public static final String PREDICTED_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\Data\\predicted\\";
-	public static final String ATTACK_PATH = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
+	public static final String IP_PATH = "Node2Vec\\Data\\edge_list_w2\\";
+	public static final String PREDICTED_PATH = "Node2Vec\\Data\\predicted\\";
+	public static final String ATTACK_PATH = "Node2Vec\\anomal_edges_from_list.txt";
 
-	public static final String ATTACK_FILE = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Visualization\\anomal_edges_from_list.txt";
+	public static final String ATTACK_FILE = "Node2Vec\\anomal_edges_from_list.txt";
 	public static final String IP_FILE = IP_PATH + "graph_";
 	public static final String PREDICTED_FILE = PREDICTED_PATH + "graph_";
 
@@ -43,9 +43,11 @@ public class DarpaCode {
 
 	private static final String ERROR_NO_COLOR = "#ff0000";
 
-	private static final String NV_DIRECTORY = "C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\Node2Vec\\";
+	private static final String NV_DIRECTORY = "Node2Vec\\";
 	
 	private static final Map<Integer, List<String>> anormalMap;
+
+	private static final String ANOMAL_EDGE_LIST_FILE = "Node2Vec\\anomal_edges_from_list.txt";
 	
 		static {
 		HashMap<Integer, List<String>> aMap;
@@ -95,7 +97,7 @@ public class DarpaCode {
 	private String processIPFiles(String id) throws FileNotFoundException {
 		String result = "";
 		String ipFilePath = IP_FILE + id;
-		File ipFile = new File(ipFilePath);
+		File ipFile = GetFileResource.getFile(ipFilePath);
 		Pattern ipPattern = Pattern.compile(IP_PATTERN);
 		Scanner ipScanner = new Scanner(ipFile);
 		while (ipScanner.hasNextLine()) {
@@ -116,7 +118,7 @@ public class DarpaCode {
 	private String processPredictedFiles(String id, String ipResult) throws FileNotFoundException {
 		String result = "";
 		String predidictedFilePath = PREDICTED_FILE + id;
-		File predictedFile = new File(predidictedFilePath);
+		File predictedFile = GetFileResource.getFile(predidictedFilePath);
 		Pattern predictedPattern = Pattern.compile(PREDICTED_PATTERN);
 		Scanner predictedScanner = new Scanner(predictedFile);
 		Scanner resultScanner = new Scanner(ipResult);
@@ -160,7 +162,7 @@ public class DarpaCode {
 	
 	private static void processPythonFiles(String... cmd) throws IOException {
 		ProcessBuilder processBuilder = new ProcessBuilder(cmd);
-		processBuilder.directory(new File(NV_DIRECTORY));
+		processBuilder.directory(GetFileResource.getFile(NV_DIRECTORY));
 		processBuilder.redirectOutput(Redirect.INHERIT);
 		Process process = processBuilder.start();
 		try {
@@ -176,7 +178,7 @@ public class DarpaCode {
 
 	private static HashMap<Integer, List<String>> queryAnormalFile() throws FileNotFoundException{
 		HashMap<Integer, List<String>> aMap = new HashMap<>();
-		Scanner scanner = new Scanner(new File("C:\\Users\\Marlin\\Documents\\Development\\Web\\darpa\\data\\classification_task\\anomal_edges_from_list.txt"));
+		Scanner scanner = new Scanner(GetFileResource.getFile(ANOMAL_EDGE_LIST_FILE));
 		int key = 0;
 		
 		while (scanner.hasNextLine()){

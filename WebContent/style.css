@@ -32,6 +32,7 @@ svg{
 } */
 #sliderContainer {
   width: 100%;
+  clear: left;
 }
 
 .noUi-handle-upper{
@@ -42,4 +43,14 @@ svg{
 }
 .noUi-handle:focus {
   outline: none;
+}
+#visualization-controls-speed{
+  float: right;;
+}
+#visualization-controls-playback{
+  float: left;
+  
+}
+#visualization-graph{
+  clear: left;
 }

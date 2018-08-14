@@ -24,7 +24,7 @@ for curr_file in ordered_fnames:
         anomals.append(anomals1[a] + ',' + anomals1[a + 1])
         # a = a + 2
 
-    print(anomals)
+    #print(anomals)
 
     # start reading the file
     with open(dir + 'edge_embs/' + curr_file) as fe:

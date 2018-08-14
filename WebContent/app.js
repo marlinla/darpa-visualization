@@ -74,10 +74,15 @@ function main() {
   //fetchData(null, GET_ATTACK);
 }
 function fetchData(id, type) {
+  var address = window.location.href.split(".");
+  var fetchAddress = "";
+  for (let i = 0; i < address.length - 1; i++){
+    fetchAddress += address[i];
+  }
   console.log(
     window.location.href.split(".")[0] + "?type=" + type + "&id=" + id
   );
-  fetch(window.location.href.split(".")[0] + "?type=" + type + "&id=" + id)
+  fetch(fetchAddress + "?type=" +  type + "&id=" + id)
     .then(function(response) {
       return response.text();
     })
@@ -211,7 +216,6 @@ function parseIP(results) {
     fetchData(ipCursor, GET_IP);
   } else {
     console.log("IP results:", ipResults);
-    showPage();
   }
 }
 function parsePredicted(results) {
@@ -229,7 +233,4 @@ function parseAttack(results) {
   console.log(attackResults);
 }
 
-function showPage() {
-  document.getElementById("loader").style.display = "none";
-  document.getElementById("visualization").style.display = "block";
-}
+

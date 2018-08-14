@@ -19,35 +19,38 @@
 	<body>
 		<div id="visualization">
 			<h1 style="text-align: center">DARPA Attack Visualization</h1>
+			<div id="visualization-controls">
+				<div id="visualization-controls-playback">
+						<p>
+								<strong>Playback Controls:</strong>
+						</p>
+					<p>
+						<button id="increment">Increment</button>
 
-			<p>
-				<button id="increment">Increment</button>
-			</p>
-			<p>
-				<button id="start">Start</button>
-			</p>
-			<p>
-				<button id="stop">Stop</button>
-			</p>
-			<p>
-				<button id="restart">Restart</button>
-			</p>
-			<p>
-				<strong>Speed Multiplier:</strong>
-			</p>
-			<p>
-				<input id="speed" type="number" value="1" step="0.25" placeho	er="Speed">
-			</p>
-			<p>
-				<button id="reset">Reset Speed Multiplier</button>
-			</p>
+						<button id="start">Start</button>
 
+						<button id="stop">Stop</button>
+
+						<button id="restart">Restart</button>
+					</p>
+				</div>
+				<div id="visualization-controls-speed">
+					<p>
+						<strong>Speed Multiplier:</strong>
+					</p>
+					<p>
+						<input id="speed" type="number" value="1" step="0.25" placeho er="Speed">
+
+						<button id="reset">Reset Speed Multiplier</button>
+					</p>
+				</div>
+			</div>
 
 
 			<div id="sliderContainer">
 
 			</div>
-			<div>
+			<div id="visualization-graph">
 				<svg width="1280" height="1000">
 					<g transform="translate(275,50), scale(1)"></g>
 				</svg>

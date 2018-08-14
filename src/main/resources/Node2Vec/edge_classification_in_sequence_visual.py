@@ -46,11 +46,11 @@ def main(fileId):
     evl.test_model(cls, testSet)
     fw2.write(str(evl.precision(0)) + ',' + str(evl.recall(0)) + ',' + str(evl.f_measure(0)) + '\n')
 
-    # print(evl.summary())
-    # print(evl.class_details())
-    print("precision:" + str(evl.precision(0)))
-    print("recall:" + str(evl.recall(0)))
-    print("fscore:" + str(evl.f_measure(0)))
+    # #print(evl.summary())
+    # #print(evl.class_details())
+    #print("precision:" + str(evl.precision(0)))
+    #print("recall:" + str(evl.recall(0)))
+    #print("fscore:" + str(evl.f_measure(0)))
 
     fw.write("# - actual - predicted - error - distribution\n")
     for index, inst in enumerate(testSet):

@@ -33,9 +33,9 @@ def main(i):
     #save the node embeddings in two arrays to find them quickly
     emb_file = open(dir + 'graph_' + str(i), 'r')
     rows, cols = emb_file.readline().rstrip().split(' ')
-    print(rows)
-    print('******')
-    print(cols)
+    #print(rows)
+    #print('******')
+    #print(cols)
     #this array for node id
     nodes = []
     #this array for node embs
@@ -47,9 +47,9 @@ def main(i):
         node_embs[count] = [float(j) for j in line1[1:]]
         count += 1
 
-    print(nodes)
-    print("****")
-    print(node_embs)
+    #print(nodes)
+    #print("****")
+    #print(node_embs)
 
     #read from edglist array, find in node emb hash and save edge emb
     fw = open(edgeEmb_dir + 'graph_' + str(i), 'w')
