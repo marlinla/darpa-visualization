@@ -74,13 +74,11 @@ function main() {
   //fetchData(null, GET_ATTACK);
 }
 function fetchData(id, type) {
-  var address = window.location.href.split(".");
-  var fetchAddress = "";
-  for (let i = 0; i < address.length - 1; i++){
-    fetchAddress += address[i];
-  }
+  var address = window.location.href.split(".jsp");
+  var fetchAddress = address[0] + address[1];
+  
   console.log(
-    window.location.href.split(".")[0] + "?type=" + type + "&id=" + id
+    fetchAddress + "?type=" + type + "&id=" + id
   );
   fetch(fetchAddress + "?type=" +  type + "&id=" + id)
     .then(function(response) {
